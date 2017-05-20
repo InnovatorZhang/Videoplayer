@@ -1,10 +1,14 @@
 package com.zhang.videoplayer;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +19,7 @@ import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhang.videoplayer.Adapter.RecyclerViewAdapter;
 import com.zhang.videoplayer.util.Utility;
@@ -32,7 +37,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     Handler mHandler = new Handler();
     Timer mTimer;
     //控制视频播放的控件
-    Button mPauseButton,mStopButton;
+    Button mPauseButton,mStopButton,mDownloadButton;
     SurfaceView mSurfaceView;
     TextView mTotalTime,mCurrentTime;
     //进度条
@@ -40,6 +45,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     MediaPlayer mMediaPlayer;
     //记录传过来的是那一条数据
     int mPosition  =0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,12 +62,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         //得到surfaceViewHolder
         SurfaceHolder surfaceholder = mSurfaceView.getHolder();
+
         //设置播放时打开屏幕
         surfaceholder.setKeepScreenOn(true);
+
         //设置回调监听
         surfaceholder.addCallback(new SurfaceListener());
 
     }
+
 
     private void setMediaListener() {
         //设置准备监听，当mediaPlayer准备好之后就播放视频
@@ -119,11 +128,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         mCurrentTime = (TextView)findViewById(R.id.play_currentTime);//显示当前时间
         mStopButton = (Button)findViewById(R.id.player_stop);
         mPauseButton = (Button)findViewById(R.id.player_pause);
+        mDownloadButton = (Button)findViewById(R.id.player_download);
         mSurfaceView = (SurfaceView)findViewById(R.id.play_surfaceView);
         //注册点击事件
         mPauseButton.setOnClickListener(this);
         mStopButton.setOnClickListener(this);
-        //监听seekBar的改变
+        mDownloadButton.setOnClickListener(this);
+
+        //注册监听事件，监听seekBar的改变
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -166,13 +178,29 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 if(mMediaPlayer.isPlaying()){
                     mMediaPlayer.stop();
                 }
+                finish();
+                break;
+            case R.id.player_download:
+                //检查是否有权限，没有就申请
+                if(ContextCompat.checkSelfPermission(PlayActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(PlayActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+                }else{
+                    startDownload(Utility.sVideos.get(mPosition).getPlayUri());
+                }
                 break;
         }
     }
 
+    /**
+     * 现在是一个空方法
+     * @param address
+     */
+    private void startDownload(String address) {
+    }
 
-
-
+    /**
+     * SurfaceHolder的回调方法
+     */
     private class SurfaceListener implements SurfaceHolder.Callback{
 
         @Override
@@ -231,6 +259,26 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
 
+    /**
+     * 权限申请的回调方法
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String[] permissions,  int[] grantResults) {
+        switch (requestCode){
+            case 1:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    startDownload(Utility.sVideos.get(mPosition).getPlayUri());
+                }else{
+                    Toast.makeText(this,"你拒绝了权限",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
     /**
      * 将返回的毫秒数转为十二小时格式的
      * @param second

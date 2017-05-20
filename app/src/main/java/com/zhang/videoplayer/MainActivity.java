@@ -1,6 +1,7 @@
 package com.zhang.videoplayer;
 
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,12 +17,14 @@ import com.zhang.videoplayer.util.HttpUtil;
 import com.zhang.videoplayer.util.Utility;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity {
 
     Handler mHandler;
-    Button mButton;
+    private final int firstPage = 0;
     RecyclerView mRecyclerView;
     RecyclerViewAdapter mRecyclerViewAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private int mPage = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,43 +35,56 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerViewAdapter = new RecyclerViewAdapter(Utility.sVideos,MainActivity.this,mHandler);
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
-        mButton.setOnClickListener(this);
+        sendRequestion(firstPage);
+        //给SwipeRefreshLayout添加监听事件
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //将页数加一
+                mPage++;
+                //将之前的数据清空
+                Utility.sVideos.clear();
+                sendRequestion(mPage);
+            }
+        });
     }
-
     /**
      * 初始化View
      */
     private void initView() {
         mHandler = new Handler();
-        mButton = (Button) this.findViewById(R.id.button1);
         mRecyclerView = (RecyclerView)findViewById(R.id.main_recyclerView);
+        mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.main_swipeRefreshLayout);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.button1:
-                HttpUtil.sendHttpRequest("http://route.showapi.com/255-1?showapi_appid=38534&showapi_sign=37a6da60d1f64755a1318e83c30a2ef8&page=2", new HttpCallbackListener() {
-                    @Override
-                    public void onFinish(final String response) {
-                        //处理返回的json数据
-                       boolean result =  Utility.handleInformation(response);
-                        if(result) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mRecyclerViewAdapter.notifyDataSetChanged();
-                                    Log.e("12345", response);
-                                }
-                            });
+    /**
+     * 请求数据
+     */
+    private void sendRequestion(int page) {
+        HttpUtil.sendHttpRequest("http://route.showapi.com/255-1?showapi_appid=38534&showapi_sign=37a6da60d1f64755a1318e83c30a2ef8&page=" + page, new HttpCallbackListener() {
+            @Override
+            public void onFinish(final String response) {
+                //处理返回的json数据
+                boolean result =  Utility.handleInformation(response);
+                if(result) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRecyclerViewAdapter.notifyDataSetChanged();
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            Log.e("12345", response);
                         }
-                    }
+                    });
+                }
+            }
 
-                    @Override
-                    public void onError(Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-        }
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
+
+
+
 }
