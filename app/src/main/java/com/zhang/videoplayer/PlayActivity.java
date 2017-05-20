@@ -25,6 +25,7 @@ import java.util.TimerTask;
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener{
 
     Handler mHandler = new Handler();
+    Timer mTimer;
     //控制视频播放的控件
     Button mPauseButton,mStopButton;
     SurfaceView mSurfaceView;
@@ -53,8 +54,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 mTotalTime.setText(change(mMediaPlayer.getDuration()/1000));
 
                 //通过handler刷新当前时间
-                final Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
+                mTimer = new Timer();
+                mTimer.schedule(new TimerTask() {
                     @Override
                     public void run() {
                         final int currentTime = mMediaPlayer.getCurrentPosition();
@@ -171,7 +172,12 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         if(mMediaPlayer.isPlaying()){
             mMediaPlayer.stop();
         }
+
         mMediaPlayer.release();
+
+        if(mTimer != null){
+            mTimer.cancel();
+        }
         super.onDestroy();
     }
 
