@@ -19,4 +19,4 @@
 
 
 ## gif如下
-![gif](giffile/SVID_20170520_232449.gif "动图"）
+![image](https://github.com/InnovatorZhang/Videoplayer/blob/master/giffile/SVID_20170520_232449.gif)
