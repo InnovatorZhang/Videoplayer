@@ -93,11 +93,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    timeTextView.setTextColor(mContext.getResources().getColor(R.color.gray));
                     Intent intent = new Intent(mContext, PlayActivity.class);
                     intent.putExtra(EXTRA_POSITION,getLayoutPosition());
                     mContext.startActivity(intent);
                 }
             });
+
+
         }
     }
 

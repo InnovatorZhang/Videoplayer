@@ -1,6 +1,7 @@
 package com.zhang.videoplayer;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -33,12 +34,12 @@ import java.util.TimerTask;
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener{
 
     public static final String MEMORY_POSITION = "PlayActivity.video.memory";
-    public static final int ALREADY_LOOKED = 0;
+
 
     Handler mHandler = new Handler();
     Timer mTimer;
     //控制视频播放的控件
-    ImageButton mPauseButton,mStopButton,mDownloadButton;
+    ImageButton mPauseButton,mStopButton,mDownloadButton,mPreButton,mNextButton;
     SurfaceView mSurfaceView;
     TextView mTotalTime,mCurrentTime;
     //进度条
@@ -116,9 +117,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                //在已经看完的情况下，记忆的播放的位置置为0
+                //在已经看完的情况下，将记忆的播放的位置清除
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(PlayActivity.this).edit();
-                editor.putInt(MEMORY_POSITION + Utility.sVideos.get(mPosition).getTitle(),ALREADY_LOOKED);
+               // editor.putInt(MEMORY_POSITION + Utility.sVideos.get(mPosition).getTitle(),ALREADY_LOOKED);
+                editor.remove(MEMORY_POSITION + Utility.sVideos.get(mPosition).getTitle());
+                Log.e("shifou huidiao ","1234582131");
                 editor.apply();
                 finish();
             }
@@ -132,11 +135,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         mStopButton = (ImageButton)findViewById(R.id.player_stop);
         mPauseButton = (ImageButton)findViewById(R.id.player_pause);
         mDownloadButton = (ImageButton)findViewById(R.id.player_download);
+        mPreButton = (ImageButton)findViewById(R.id.pre_video);
+        mNextButton = (ImageButton)findViewById(R.id.next_video);
         mSurfaceView = (SurfaceView)findViewById(R.id.play_surfaceView);
         //注册点击事件
         mPauseButton.setOnClickListener(this);
         mStopButton.setOnClickListener(this);
         mDownloadButton.setOnClickListener(this);
+        mPreButton.setOnClickListener(this);
+        mNextButton.setOnClickListener(this);
 
         //注册监听事件，监听seekBar的改变
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -199,6 +206,27 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                     ActivityCompat.requestPermissions(PlayActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
                 }else{
                     startDownload(Utility.sVideos.get(mPosition).getPlayUri());
+                }
+                break;
+            case R.id.pre_video:
+                if(mPosition > 0) {
+                    //启动另一个PlayVideoActicity
+                    Intent preIntent = new Intent(PlayActivity.this, PlayActivity.class);
+                    preIntent.putExtra(RecyclerViewAdapter.EXTRA_POSITION, mPosition - 1);
+                    startActivity(preIntent);
+                    //结束当前的活动
+                    finish();
+                }
+                break;
+
+            case R.id.next_video:
+                if(mPosition < Utility.sVideos.size()) {
+                    //启动另一个PlayVideoActicity
+                    Intent nextIntent = new Intent(PlayActivity.this, PlayActivity.class);
+                    nextIntent.putExtra(RecyclerViewAdapter.EXTRA_POSITION, mPosition + 1);
+                    startActivity(nextIntent);
+                    //结束当前的活动
+                    finish();
                 }
                 break;
         }

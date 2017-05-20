@@ -53,20 +53,42 @@
 
         <ImageButton
             android:id="@+id/player_pause"
-            android:background="@drawable/pause_video"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:src="@drawable/pause_video"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
 
         <ImageButton
             android:id="@+id/player_stop"
             android:background="@drawable/stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
         <ImageButton
             android:id="@+id/player_download"
             android:background="@drawable/download_video"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:src="@drawable/pre_video"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="100dp"
+            android:id="@+id/pre_video"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+
+        <ImageButton
+            android:src="@drawable/next_video"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="80dp"
+            android:id="@+id/next_video"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
 
     </LinearLayout>
 
