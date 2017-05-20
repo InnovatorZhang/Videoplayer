@@ -62,10 +62,12 @@ public class Utility {
                 if (jsonObject.has("video_uri")) {
                     Video video = new Video();
                     video.setAuthorName(jsonObject.getString("name"));
-
                     video.setPlayUri(jsonObject.getString("video_uri"));
                     video.setImageUri(jsonObject.getString("profile_image"));
                     video.setTitle(jsonObject.getString("text"));
+                    video.setLoveNumber(jsonObject.getString("love"));
+                    video.setHateNumber(jsonObject.getString("hate"));
+                    video.setTime(jsonObject.getString("create_time"));
                     //有时间的话 调整为加入数据库中
                     sVideos.add(video);
                 }

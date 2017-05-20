@@ -51,6 +51,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.nameTextView.setText( mVideoList.get(position).getAuthorName());
         holder.titleTextView.setText(mVideoList.get(position).getTitle());
+        holder.loveTextView.setText(mVideoList.get(position).getLoveNumber());
+        holder.hateTextView.setText(mVideoList.get(position).getHateNumber());
+        holder.timeTextView.setText(mVideoList.get(position).getTime());
         //异步加载图片，利用回调和handler更新图片
         HttpUtil.loadBitmap(mVideoList.get(position).getImageUri(), new SetBitmapListener() {//"http://pic3.zhimg.com/1a1ad1682cc17b7058633f2e87368976.jpg"
             @Override
@@ -74,14 +77,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView titleTextView;
-        TextView nameTextView;
+
+        TextView nameTextView,titleTextView,timeTextView,hateTextView,loveTextView;
         ImageView imageView;
         public ViewHolder(View itemView) {
             super(itemView);
 
             titleTextView = (TextView)itemView.findViewById(R.id.item_title);
             nameTextView = (TextView)itemView.findViewById(R.id.item_name);
+            timeTextView = (TextView)itemView.findViewById(R.id.item_time);
+            hateTextView = (TextView)itemView.findViewById(R.id.item_hate_number);
+            loveTextView = (TextView)itemView.findViewById(R.id.item_love_number);
             imageView = (ImageView)itemView.findViewById(R.id.item_image);
 
             itemView.setOnClickListener(new View.OnClickListener() {

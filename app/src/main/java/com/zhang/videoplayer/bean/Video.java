@@ -18,6 +18,37 @@ public class Video {
     private String authorName;
     //作者照片地址
     private String imageUri;
+    //创造时间
+    private String time;
+    //不喜欢的数量
+    private String hateNumber;
+    //喜欢的数量
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getHateNumber() {
+        return hateNumber;
+    }
+
+    public void setHateNumber(String hateNumber) {
+        this.hateNumber = hateNumber;
+    }
+
+    public String getLoveNumber() {
+        return loveNumber;
+    }
+
+    public void setLoveNumber(String loveNumber) {
+        this.loveNumber = loveNumber;
+    }
+
+    private String loveNumber;
 
     public String getPlayUri() {
         return playUri;

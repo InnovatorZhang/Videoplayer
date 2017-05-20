@@ -16,6 +16,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -37,7 +38,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     Handler mHandler = new Handler();
     Timer mTimer;
     //控制视频播放的控件
-    Button mPauseButton,mStopButton,mDownloadButton;
+    ImageButton mPauseButton,mStopButton,mDownloadButton;
     SurfaceView mSurfaceView;
     TextView mTotalTime,mCurrentTime;
     //进度条
@@ -45,6 +46,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     MediaPlayer mMediaPlayer;
     //记录传过来的是那一条数据
     int mPosition  =0;
+    //用来决定使用哪一张图片
+    private boolean picture = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,9 +129,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         mSeekBar = (SeekBar)findViewById(R.id.play_seekBar);
         mTotalTime =(TextView)findViewById(R.id.play_totalTime);//显示总共时间
         mCurrentTime = (TextView)findViewById(R.id.play_currentTime);//显示当前时间
-        mStopButton = (Button)findViewById(R.id.player_stop);
-        mPauseButton = (Button)findViewById(R.id.player_pause);
-        mDownloadButton = (Button)findViewById(R.id.player_download);
+        mStopButton = (ImageButton)findViewById(R.id.player_stop);
+        mPauseButton = (ImageButton)findViewById(R.id.player_pause);
+        mDownloadButton = (ImageButton)findViewById(R.id.player_download);
         mSurfaceView = (SurfaceView)findViewById(R.id.play_surfaceView);
         //注册点击事件
         mPauseButton.setOnClickListener(this);
@@ -168,12 +171,22 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
 
             case R.id.player_pause:
+
+                //切换图片
+                picture = !picture;
+                if(picture) {
+                    mPauseButton.setImageResource(R.drawable.cideo_play);
+                }else {
+                    mPauseButton.setImageResource(R.drawable.pause_video);
+                }
+
                 if(mMediaPlayer.isPlaying()){
                     mMediaPlayer.pause();
                 }else{
                     mMediaPlayer.start();
                 }
                 break;
+
             case R.id.player_stop:
                 if(mMediaPlayer.isPlaying()){
                     mMediaPlayer.stop();

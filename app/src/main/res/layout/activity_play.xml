@@ -51,20 +51,20 @@
         android:layout_height="wrap_content">
 
 
-        <Button
+        <ImageButton
             android:id="@+id/player_pause"
-            android:text="pause"
+            android:background="@drawable/pause_video"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/player_stop"
-            android:text="stop"
+            android:background="@drawable/stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-        <Button
+        <ImageButton
             android:id="@+id/player_download"
-            android:text="download"
+            android:background="@drawable/download_video"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
