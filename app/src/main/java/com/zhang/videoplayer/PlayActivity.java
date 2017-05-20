@@ -1,8 +1,10 @@
 package com.zhang.videoplayer;
 
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,9 @@ import java.util.TimerTask;
 
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener{
+
+    public static final String MEMORY_POSITION = "PlayActivity.video.memory";
+    public static final int ALREADY_LOOKED = 0;
 
     Handler mHandler = new Handler();
     Timer mTimer;
@@ -63,7 +68,17 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
+                //看是否有观看记录
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(PlayActivity.this);
+                int memory = prefs.getInt(MEMORY_POSITION + Utility.sVideos.get(mPosition).getTitle(),0);
                 mMediaPlayer.start();
+
+                //如果不等于0，也就是说原来看过的话，就直接从原来看过的地方开始观看
+                //并将seekBar移动到对应位置
+                if(memory != 0){
+                    mMediaPlayer.seekTo(memory);
+                    mSeekBar.setProgress(mMediaPlayer.getCurrentPosition()*100/mMediaPlayer.getDuration());
+                }
 
                 mTotalTime.setText(change(mMediaPlayer.getDuration()/1000));
 
@@ -76,7 +91,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
+                                //设置时间的同时也要移动seekBar
                                 mCurrentTime.setText(change(currentTime/1000));
+                                mSeekBar.setProgress(currentTime*100/mMediaPlayer.getDuration());
                             }
                         });
                     }
@@ -87,6 +104,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                //在已经看完的情况下，记忆的播放的位置置为0
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(PlayActivity.this).edit();
+                editor.putInt(MEMORY_POSITION + Utility.sVideos.get(mPosition).getTitle(),ALREADY_LOOKED);
+                editor.apply();
                 finish();
             }
         });
@@ -195,6 +216,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
+        //存储当前的位置，以便下一次直接观看
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(PlayActivity.this).edit();
+        editor.putInt(MEMORY_POSITION + Utility.sVideos.get(mPosition).getTitle(),mMediaPlayer.getCurrentPosition());
+        editor.apply();
         //当活动被摧毁时，释放资源
         if(mMediaPlayer.isPlaying()){
             mMediaPlayer.stop();
