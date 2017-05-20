@@ -153,7 +153,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-
+            //开始试过将cancle方法防在ondestoy中，结果会爆炸，先将其放入surfaceDedtroyed中，可以正常运行
+            if(mTimer != null){
+                mTimer.cancel();
+            }
         }
     }
 
@@ -175,9 +178,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         mMediaPlayer.release();
 
-        if(mTimer != null){
-            mTimer.cancel();
-        }
+
         super.onDestroy();
     }
 
