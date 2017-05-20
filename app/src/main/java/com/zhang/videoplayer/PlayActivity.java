@@ -45,6 +45,20 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         initView();
 
         mMediaPlayer = new MediaPlayer();
+
+       //给mMedialPayer设置监听
+        setMediaListener();
+
+        //得到surfaceViewHolder
+        SurfaceHolder surfaceholder = mSurfaceView.getHolder();
+        //设置播放时打开屏幕
+        surfaceholder.setKeepScreenOn(true);
+        //设置回调监听
+        surfaceholder.addCallback(new SurfaceListener());
+
+    }
+
+    private void setMediaListener() {
         //设置准备监听，当mediaPlayer准备好之后就播放视频
         mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -62,20 +76,20 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                           mCurrentTime.setText(change(currentTime/1000));
+                                mCurrentTime.setText(change(currentTime/1000));
                             }
                         });
                     }
                 },0,1000);
             }
         });
-        //得到surfaceViewHolder
-        SurfaceHolder surfaceholder = mSurfaceView.getHolder();
-        //设置播放时打开屏幕
-        surfaceholder.setKeepScreenOn(true);
-        //设置回调监听
-        surfaceholder.addCallback(new SurfaceListener());
-
+        //当播放完成时，结束这个活动
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                finish();
+            }
+        });
     }
 
     private void initView() {
@@ -100,8 +114,17 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
             }
 
+            /**
+             * 应该在这个方法中去进行进度与时间的关联
+             * @param seekBar
+             */
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                int value = mSeekBar.getProgress()
+                        * mMediaPlayer.getDuration() // 计算进度条需要前进的位置数据大小
+                        / mSeekBar.getMax();
+                mCurrentTime.setText(change(value / 1000));
+                mMediaPlayer.seekTo(value);
 
             }
         });
@@ -153,10 +176,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-            //开始试过将cancle方法防在ondestoy中，结果会爆炸，先将其放入surfaceDedtroyed中，可以正常运行
+            //开始试过将cancel方法防在onDestroy中，结果会爆炸，先将其放入surfaceDedtroyed中，可以正常运行
             if(mTimer != null){
                 mTimer.cancel();
             }
+
         }
     }
 
