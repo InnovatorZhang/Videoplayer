@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerViewAdapter mRecyclerViewAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private int mPage = 1;
+    private String ADDRESS = "http://route.showapi.com/255-1?showapi_appid=38534&showapi_sign=37a6da60d1f64755a1318e83c30a2ef8&page=";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
      * 请求数据
      */
     private void sendRequestion(int page) {
-        HttpUtil.sendHttpRequest("http://route.showapi.com/255-1?showapi_appid=38534&showapi_sign=37a6da60d1f64755a1318e83c30a2ef8&page=" + page, new HttpCallbackListener() {
+        HttpUtil.sendHttpRequest(ADDRESS + page, new HttpCallbackListener() {
             @Override
             public void onFinish(final String response) {
                 //处理返回的json数据
