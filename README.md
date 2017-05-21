@@ -11,8 +11,12 @@
 5.播放进度保存，再次播放视频跳转到上次播放的位置 
 6. 适配了一个读取存储卡动态权限 
 ```
-
+## 后面有gif，不知道为什么变形了
 
 ## 截图如下
 ![截图](screenshot/Screenshot_20170520-223503.png "截图")
 ![截图](screenshot/Screenshot_20170520-223701.png "截图")
+
+
+## gif如下
+![image](https://github.com/InnovatorZhang/Videoplayer/blob/master/giffile/SVID_20170520_232449.gif)
